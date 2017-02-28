@@ -1,0 +1,105 @@
+* {
+margin: 0;
+padding: 1px;
+}
+html,
+body {
+   height: 100%;
+   padding: 10px;
+   font-family: "Comic Sans MS", cursive, sans-serif;
+}
+#wrapper {
+   background: rgba(0, 0, 0, 0);
+   height: 100%;
+}
+#sidebar {
+   background: rgba(200, 200, 200, 0.6);
+   float: left;
+   height: 60%;
+   width: 216px;
+   margin-top: 50px;
+   padding: 16px;
+   border-radius: 8px;
+   -moz-border-radius: 8px;
+   -webkit-border-radius: 8px;
+   border: 1px solid #666;
+}
+#plot {
+   background: rgba(0, 0, 0, 0);
+   height: 80%;
+   width:auto;
+   margin-left: 250px;
+   /*padding: 16px;*/
+}
+h1,h2,h3 {
+    color: #666;
+}
+h2 {
+    margin-top: -20px;
+}
+h3.results {
+    color: rgba(50, 205, 50, 1);
+    margin: 5px;
+}
+p  {
+    color: gray;
+}
+strong {
+    color: #666;
+}
+p#results  {
+    text-align: center;
+    color: black;
+}
+p#results > strong {
+    color: rgba(50, 205, 205, 1);
+}
+input, textarea {
+    font-size: 12px;
+    padding: 3px;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border: 1px solid #666;
+}
+textarea {
+    width: 94%;
+}
+input[type="number"] {
+    width: 48%;
+}
+em > a {
+    color: #000
+}
+button#submit {
+    text-align: center;
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    color: #666;
+    margin: auto;
+    width: 100px;
+    height: 40px;
+    background-color: rgba(50, 205, 205, 0.5);
+    font-size: 16px;
+    margin-left: 44px;
+    border-radius: 8px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border: 1px solid #666;
+}
+#loadingDiv {
+   width: 100px;
+   height: 100px;
+   /*margin-top: -100px;*/
+}
+#alerts > p {
+    margin-top: 10px;
+    text-align: center;
+    font-size:10px;
+}
+table {
+    border-collapse: collapse;
+}
+table, td, th {
+    background-color: rgba(0, 0, 0, 0);
+    border: 1px solid gray;
+}
