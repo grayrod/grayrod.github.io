@@ -202,10 +202,10 @@ function getMinMax() {
 }
 
 function displayResults() {
-  var resultsHTML = "<strong>Calculated</strong> " + fda.length + " unique points&nbsp;&nbsp;";
-  resultsHTML+="<strong>Min:</strong> (" + fd.min.x + ", " + fd.min.fx + ")&nbsp;&nbsp;";
-  resultsHTML+="<strong>Max:</strong> (" + fd.max.x + ", " + fd.max.fx + ")&nbsp;&nbsp;";
-  resultsHTML+="<strong>Area:</strong> " + fd.area;
+  var resultsHTML = "<p><span>Calculated</span> " + fda.length + " unique points&nbsp;&nbsp;";
+  resultsHTML+="<span>Min:</span> (" + fd.min.x + ", " + fd.min.fx + ")&nbsp;&nbsp;";
+  resultsHTML+="<span>Max:</span> (" + fd.max.x + ", " + fd.max.fx + ")&nbsp;&nbsp;";
+  resultsHTML+="<span>Area:</span> " + fd.area + "</p>";
   document.getElementById("results").innerHTML = resultsHTML;
 }
 
@@ -247,6 +247,6 @@ function drawChart(points) {
 }
 
 function myReadyHandler() {
-    document.getElementById("loadingDiv").style.display = "none";
-    document.getElementById("buttonDiv").style.display = "block";
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("ready").style.display = "block";
 }

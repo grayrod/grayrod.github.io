@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="na.css">
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -9,32 +10,40 @@
 </head>
 
 <body>
-    <div id="wrapper">
-        <center><h2>Adaptive Numerical Analysis JS</h2><p style="font-size:14px">Click Evaluate to calculate the minimum, maximum, area, and plot of the function on the given interval.<br />
-        Results are generated using recursive numerical integration and differentiation algorithms implemented in JavaScript.<br /></p></center>
+    <div id="top">
+        <center><h2>Adaptive Numerical Analysis JS</h2>
+        <p>Click Evaluate to calculate the minimum, maximum, area, and plot of the function on the given interval.
+        <br />
+        Results are generated using recursive numerical integration and differentiation algorithms implemented in JavaScript.
+        <br /></p></center>
         <p>&nbsp;</p>
-        <p id="results">&nbsp;</p>
-
-        <div id="sidebar">
-            <p><strong>Function of x:</strong></p>
+        <div id="results">
+            <p>&nbsp;</p>
+        </div>
+    </div>
+    <div id="wrapper">
+        <div id="parameters">
+            <div id="inputs">
+                <p><strong>Function of x:</strong></p>
                 <textarea id="f" rows="4">Math.pow(x-2, 3) - (Math.pow(x, 2) * Math.sin(Math.pow(x, 2))) + Math.pow(x, 2)</textarea><br />
-                <p style="font-size:12px"><em>Enter a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math#Methods" target="_blank">mathematical JavaScript</a> expression using variable x.</em></p><br />
-            <p><strong>Interval of x:</strong></p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start:&nbsp;
-                <input type="number" id="xa" value="2" step="0.1"></p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;End:&nbsp;&nbsp;&nbsp;&nbsp;
-                <input type="number" id="xb" value="9.1" step="0.1"></p><br />
-            <p><strong>Tolerance: </strong>
-                <input type="number" id="tol" value="0.01" step="0.00001"><br />
-                <p style="font-size:12px"><em>A smaller value like 0.0001 gives finer results, and calculates more points.</em></p></p>
-            <div id="buttonDiv" style="display:block; margin:auto;">
+                <p class="explanation">Enter a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math#Methods" target="_blank">mathematical JavaScript</a> expression using variable x.</p>
                 <br />
-                <button type="button" id="submit" style="display:block"><strong>Evaluate</strong></button>
+                <p><strong>Interval: </strong><input id="xa" class="interval" type="number" value="2" step="0.1"> to <input id="xb" class="interval" type="number" value="9.1" step="0.1"></p>
+                <p class="explanation">The range of x to evaluate over.</p>
+                <br />
+                <p><strong>Tolerance: </strong>&nbsp;&nbsp;<input type="number" id="tol" value="0.01" step="0.00001"></p>
+                <p class="explanation">The desired degree of accuracy. A smaller value like 0.00001 gives more precise results, and calculates more points.</p>
+                </p>
             </div>
 
-            <div id="loadingDiv" style="display:none; margin:auto;">
+            <div id="ready" style="display:block; margin:auto;">
+                <button type="button" id="evaluate" style="display:block"><strong>Evaluate</strong></button>
+            </div>
+
+            <div id="loading" style="display:none; margin:auto;">
                 <img src='loading.gif' id='loading-image' style='max-width: 100%; max-height: 100%; margin:auto;' />
             </div>
+
             <div id="alerts">
                 <!-- infinity alerts will appear here -->
             </div>
@@ -58,11 +67,12 @@
         });
     })(jQuery);
     $(document).ready(function() {
-        $('#submit').click(function() {
-            $('#loadingDiv').show();
-            $('#buttonDiv').hide();
+        $('#evaluate').click(function() {
+            $('#alerts').empty();
+            $('#loading').show();
+            $('#ready').hide();
         });
-        $('#loadingDiv').on('show', function() {
+        $('#loading').on('show', function() {
             setTimeout("analyzeMyFunction( [ $('#xa').val(), $('#xb').val() ], $('#tol').val(), $('#f').val() );", 1000);
         });
     });
