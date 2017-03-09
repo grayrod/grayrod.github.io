@@ -35,7 +35,7 @@ function clearData() {
 
 // Runs adaptiveQuadrature and cleans up its data
 function scout(interval, tolerance) {
-  fd.area = adaptiveQuadrature(interval, tolerance, simpsonsRule(interval), 50);
+  fd.area = adaptiveQuadrature(interval, tolerance, simpsonsRule(interval), 10);
   fd.p = deDupeX(fd.p);
   fd.p = fd.p.sort(function(m, n){return m.x - n.x});
 }
@@ -96,7 +96,7 @@ function forage(points) {
 // Runs zoom over sequential pairs of points
 function capture(points, coverSize) {
   for (var i = 0; i < points.length - 1; i++) {
-    zoom([points[i].x, points[i+1].x], coverSize, 50);
+    zoom([points[i].x, points[i+1].x], coverSize, 10);
   }
 }
 

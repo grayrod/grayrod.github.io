@@ -3,15 +3,16 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="na.css">
+    <link rel="stylesheet" type="text/css" href="ne.css">
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script type="text/javascript" src="na.js"></script>
+    <script type="text/javascript" src="ne.js"></script>
+    <script type="text/javascript" src="../expr-eval/index.js"></script>
 </head>
 
 <body>
     <div id="top">
-        <center><h2>Adaptive Numerical Analysis JS</h2>
+        <center><h2>Numerical Extrema JS</h2>
         <p>Click Evaluate to calculate the minimum, maximum, area, and plot of the function on the given interval.
         <br />
         Results are generated using recursive numerical integration and differentiation algorithms implemented in JavaScript.
@@ -53,8 +54,48 @@
             <!-- google chart will appear here -->
         </div>
 
-    </div>
 
+    <div id="about">
+        <h3>WTF is this?</h3>
+            <p>A <a href="https://en.wikipedia.org/wiki/Mathematical_optimization" target="_blank"><strong>Mathematical Optimization</strong></a> algorithm created by Grayson Rodriguez that finds the minimum and maximum values (aka extrema) of any real-valued function that's continuous in a closed and bounded interval [a,b]. &nbsp; Basically, you give it a function and interval, and it gives you the function's minimum and maximum points (as well as the area under the function because I’m just that nice). You can also specify the degree of accuracy.</p>
+
+        <h3>Why did I make this?</h3>
+            <p>I wanted to learn a variety of JavaScript quickly, and I enjoy playing with functions, plots, and calculus. This took about 20 hours of learning, coding, styling, and lots of debugging.</p>
+            <p>Also, learning seems to work better when...</p>
+            <ul>
+                <li>You make something enjoyable  —> For motivation.</li>
+                <li>You something complex  —> For sufficiently many rabbit holes to go into.</li>
+            </ul>
+
+        <h3>Why math?</h3>
+            <p>I already understood the math concepts and could apply them to JavaScript.  While in college I took a Numerical Analysis course where I learned computational numerical methods for solving math problems like finding roots of polynomials, interpolation/extrapolation of data points, and integration of functions.  I coded in Mathematica at the time, and created my own optimization algorithm for an assignment.</p>
+
+
+        <h3>What did I learn?</h3>
+                <p>My original algorithm from college had a flaw! It's fixed here. I learned a bunch of JavaScript and some CSS...</p>
+                <p>I learned the essentials:</p>
+                <ul>
+                    <li>Expressions
+                    <li>Operators
+                    <li>Variables and scope
+                    <li>Data types
+                    <li>Literals
+                </ul>
+                <p>And some deeper dives:</p>
+                <ul>
+                    <li>Floating point arithmetic
+                    <li>Array methods
+                    <li>Object methods
+                    <li>Recursion
+                    <li>Nested loops and conditionals
+                    <li>Regular expressions
+                    <li>DOM manipulation
+                    <li>Callbacks
+                    <li>Google Charts API
+                    <li>Responsive CSS
+                </ul>
+    </div>
+    </div>
     <script>
     (function ($) {
         $.each(['show', 'hide'], function (i, ev) {

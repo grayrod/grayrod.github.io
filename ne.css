@@ -56,7 +56,7 @@ p  {
     }
 }
 @media (max-width: 800px) {
-    #parameters, #plot {
+    #parameters, #plot, #about {
         display: block;
         float: none;
         width: 90%;
@@ -67,6 +67,12 @@ p  {
     }
     #top > h1,h2,h3,p {
         font-size: 12px;
+    }
+    #about > h3 {
+        font-size: 16px;
+    }
+    #about > p {
+        font-size: 14px;
     }
     #results {
         font-size: 12px;
@@ -133,4 +139,20 @@ table {
 table, td, th {
     background-color: rgba(0, 0, 0, 0);
     border: 1px solid gray;
+}
+#about {
+    line-height: 25px;
+    float:left;
+}
+#about > h3 {
+    line-height: 50px;
+    color: #111
+}
+#about > p {
+    color: #333
+}
+#about > ul {
+    margin-left:50px;
+    color: #333;
+    list-style: outside;
 }
