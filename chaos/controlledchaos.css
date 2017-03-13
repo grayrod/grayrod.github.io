@@ -1,0 +1,100 @@
+* {
+    margin: 0;
+    padding: 1px;
+}
+html,body {
+   height: 100%;
+   padding: 2px;
+   font-family: "Comic Sans MS", "Helvetica", sans-serif;
+}
+h1,h2,h3,strong {
+    color: #666;
+}
+p  {
+    color: #777;
+}
+#top {
+    text-align: center;
+}
+#top > p {
+    font-size: 14px;
+}
+#results > p {
+    text-align: center;
+    font-size: 16px;
+    color: black;
+}
+#results > p > span {
+    font-weight: bold;
+    color: rgba(50, 205, 205, 1);
+}
+.help {
+    color: #999;
+}
+input[type="button"] {
+    text-align: center;
+    font-family: "Comic Sans MS", "Helvetica", sans-serif;
+    color: #666;
+    margin: auto;
+    margin-top: 6px;
+    width: 60px;
+    height: 30px;
+    background-color: #ddd;
+    font-size: 12px;
+    border-radius: 6px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border: 0px solid #666;
+}
+input[value="Pause"] {
+    background-color: #666;
+    color: #fff;
+}
+input[type="button"]:active {
+    background-color: rgba(50, 205, 205, 0.5);
+}
+/*input[value="Color"] {
+    background-color: #666;
+    color: #fff;
+}
+input[value="Mode"] {
+    background-color: #666;
+    color: #fff;
+}*/
+#plot {
+    margin:auto;
+    width: 80%;
+    height: 80%;
+}
+@media (min-width: 800px) and (max-width: 1106px) {
+    #parameters
+    {
+        height: 500px;
+    }
+}
+@media (max-width: 800px) {
+    #parameters, #plot, #about {
+        display: block;
+        float: none;
+        width: 90%;
+        margin-top: 10px;
+    }
+    #parameters {
+        height: 400px;
+    }
+    #top > h1,h2,h3,p {
+        font-size: 12px;
+    }
+    #about > h3 {
+        font-size: 16px;
+    }
+    #about > p {
+        font-size: 14px;
+    }
+    #results {
+        font-size: 12px;
+    }
+    #results > p > span {
+        display: block;
+    }
+}
