@@ -70,11 +70,11 @@ function playbackDense() {
 }
 function playbackFluffy() {
     if (b < 0.999) {
-      timer = setTimeout(function() {b = b + 0.001; mira(a, b, x, y, n); drawChart();}, 300);
+      timer = setTimeout(function() {b = b + 0.001; mira(a, b, x, y, n); drawChart();}, 100);
     } else if (b < 1.0010) {
-      timer = setTimeout(function() {b = b + 0.0001; mira(a, b, x, y, n); drawChart();}, 300);
+      timer = setTimeout(function() {b = b + 0.0001; mira(a, b, x, y, n); drawChart();}, 100);
     } else if (b = 1.0010) {
-      timer = setTimeout(function() {randomize(); b = 0.990; mira(a, b, x, y, n); drawChart();}, 300);
+      timer = setTimeout(function() {randomize(); b = 0.990; mira(a, b, x, y, n); drawChart();}, 100);
     }
 }
 function stop() {
