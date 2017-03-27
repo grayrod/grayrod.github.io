@@ -42,14 +42,14 @@
       </div>
 
       <div id="topright">
-        <div id="playpause" class="topbtn" onclick="playPause()">
-          <p>||</p>
+        <div id="playpause" class="topbtn" style="letter-spacing:-2px" onclick="playPause()">
+          <p>|| </p>
         </div>
-        <div id="speedup" class="topbtn" style="display:none" onclick="speedUp()">
+        <div id="speedup" class="topbtn" style="display:none; letter-spacing:-6px" onclick="speedUp()">
           <p>>></p>
         </div>
-        <div id="slowdown" class="topbtn" style="display:none" onclick="slowDown()">
-          <p><<</p>
+        <div id="slowdown" class="topbtn" style="display:none; letter-spacing:-6px" onclick="slowDown()">
+          <p><<&nbsp;</p>
         </div>
         <div id="loop" class="topbtn" style="display:none" onclick="loopUnloop()">
           <p>O</p>
@@ -99,32 +99,32 @@
 
 <script>
 $(document).ready(function() {
-
   graphArray = [];
+  genArray = ["shuffle", "shuffle", "shuffle", "shuffle"];
 
   var countdown1 = setTimeout(function() {
-    graph1 = new Graph("graph1", "params1", genSetRandom, "rgba(42,42,42,255)", drawCross, "0x4b", "0xf5", "0x89" );
+    graph1 = new Graph("graph1", "params1", genArray[0], colors.darkgray, draw2x2, colors.lime );
     graphArray.push(graph1);
     graph1.initialize();
     graph1.start();
   },100);
 
   var countdown2 = setTimeout(function() {
-    graph2 = new Graph("graph2", "params2", genSetRandom, "rgba(42,42,42,255)", drawCross, "0xf1","0x00","0xf1" );
+    graph2 = new Graph("graph2", "params2", genArray[1], colors.darkgray, draw2x2, colors.magenta );
     graphArray.push(graph2);
     graph2.initialize();
     graph2.start();
   },1300);
 
   var countdown3 = setTimeout(function() {
-    graph3 = new Graph("graph3", "params3", genSetRandom, "rgba(42,42,42,255)", drawCross,"0xcc","0xcc","0x00" );
+    graph3 = new Graph("graph3", "params3", genArray[2], colors.darkgray, draw2x2, colors.yellow );
     graphArray.push(graph3);
     graph3.initialize();
     graph3.start();
   },2500);
 
   var countdown4 = setTimeout(function() {
-    graph4 = new Graph("graph4", "params4", genSetRandom, "rgba(42,42,42,255)", drawCross,"0x00", "0xd4", "0xd9" );
+    graph4 = new Graph("graph4", "params4", genArray[3], colors.darkgray, draw2x2, colors.cyan );
     graphArray.push(graph4);
     graph4.initialize();
     graph4.start();
@@ -167,7 +167,6 @@ $('div.container').mousedown(function(){
     } else {
       pp.html('||');
     }
-    focused.px.style = drawCross;
     focused.n = 10000;
     focused.draw();
 
@@ -175,8 +174,7 @@ $('div.container').mousedown(function(){
     if (focused.s.paused == false) {
       focused.stop();
     }
-    focused.n = 2500;
-    focused.px.style = draw3x3;
+    focused.n = 3000;
     $(this).css("width", "50%");
     $(this).css("height", "50%");
     $('div.container').each(function(){
@@ -298,7 +296,7 @@ function loopUnloop() {
 
 function loopMe() {
   focused.s.looped = true;
-  ll.html('!o');
+  ll.html('&#216;');
   // logLoopedStates();
 }
 
@@ -319,7 +317,6 @@ function zoomOut() {
   if (focused.zi > 0) {
     focused.zi = focused.zi - 1;
     focused.scale = focused.zf[focused.zi];
-    scalePixels();
     if (focused.s.paused == true) {
       focused.draw();
     }
@@ -327,26 +324,14 @@ function zoomOut() {
 }
 
 function zoomIn() {
-  if (focused.zi < 15) {
+  if (focused.zi < 23) {
     focused.zi = focused.zi + 1;
     focused.scale = focused.zf[focused.zi];
-    scalePixels();
     if (focused.s.paused == true) {
       focused.draw();
     }
   }
-}
-
-function scalePixels() {
-  if (focused.zi > 2 && focused.zi < 8) {
-    focused.px.style = drawCross;
-  } else if (focused.zi > 7 && focused.zi < 11) {
-    focused.px.style = draw3x5;
-  } else if (focused.zi > 10) {
-    focused.px.style = draw5x5;
-  } else if (focused.zi < 3) {
-      focused.px.style = drawSinglePixel;
-  }
+  console.log(focused.zi);
 }
 
 function slowDown() {
