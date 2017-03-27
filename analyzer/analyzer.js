@@ -29,8 +29,8 @@ function analyzeMyFunction(interval, tolerance, functionOfX) {
 function clearData() {
   fd = {p:[], dp:[], fp:[], ci:[], cp:[], min:{}, max:{}, area:NaN};
   fda = [];
-  document.getElementById('alerts').innerHTML = "";
-  document.getElementById('plot').innerHTML = "<br /><h3>&nbsp;&nbsp;&nbsp;You dun goofed this time brah.</h3>";
+  $('#alerts').empty();
+  $('#plot').html("<br /><h3>&nbsp;&nbsp;&nbsp;You dun goofed this time brah.</h3>");
 }
 
 // Runs adaptiveQuadrature and cleans up its data
@@ -68,13 +68,13 @@ function simpsonsRule(interval) {
   var alert = "<p><b>Aborted. Vertical asymptote.</b></p>"
   if (fxa !== Infinity && fxa !== NaN) {
     fd.p.push({x:xa, fx:fxa});
-  } else {document.getElementById('alerts').innerHTML = alert}
+  } else {$('#alerts').html(alert)}
   if (fxm !== Infinity && fxm !== NaN) {
     fd.p.push({x:xm, fx:fxm});
-  } else {document.getElementById('alerts').innerHTML = alert}
+  } else {$('#alerts').html(alert)}
   if (fxb !== Infinity && fxb !== NaN) {
     fd.p.push({x:xb, fx:fxb});
-  } else {document.getElementById('alerts').innerHTML = alert}
+  } else {$('#alerts').html(alert)}
   return ((xb - xa) / 6) * (fxa + 4*fxm + fxb);
 }
 
@@ -191,6 +191,7 @@ function sortMergeData() {
     fda = temp.concat(fd.dp);
     fda = deDupeX(fda);
     fda = fda.sort(function(m, n){return m.fx - n.fx});
+    console.log('Extremum: '+JSON.stringify(fd.cp));
 }
 
 function getMinMax() {
@@ -203,10 +204,10 @@ function getMinMax() {
 
 function displayResults() {
   var resultsHTML = "<p><span>Calculated</span> " + fda.length + " unique points&nbsp;&nbsp;";
-  resultsHTML+="<span>Min:</span> (" + fd.min.x + ", " + fd.min.fx + ")&nbsp;&nbsp;";
-  resultsHTML+="<span>Max:</span> (" + fd.max.x + ", " + fd.max.fx + ")&nbsp;&nbsp;";
-  resultsHTML+="<span>Area:</span> " + fd.area + "</p>";
-  document.getElementById("results").innerHTML = resultsHTML;
+  resultsHTML+="<span> Min:</span> (" + fd.min.x.toFixed(8) + ", " + fd.min.fx.toFixed(8) + ")&nbsp;&nbsp;";
+  resultsHTML+="<span> Max:</span> (" + fd.max.x.toFixed(8) + ", " + fd.max.fx.toFixed(8) + ")&nbsp;&nbsp;";
+  resultsHTML+="<span> Area:</span> " + fd.area.toFixed(8) + "</p>";
+  $('#results').html(resultsHTML);
 }
 
 function plotPoints() {
@@ -228,6 +229,7 @@ function plotPoints() {
 function drawChart(points) {
   var data = google.visualization.arrayToDataTable(points);
   var options = {
+    fontName: '"Comic Sans MS", "Helvetica", sans-serif',
     colors: [ '#32cd32', '#328ccd', '#ffa500', '#e94d20'],
     series: {
             0: { pointShape: 'circle', pointSize: 3},
@@ -239,7 +241,8 @@ function drawChart(points) {
     hAxis: {title: 'x'},
     vAxis: {title: 'f(x)'},
     legend: {position: 'top', textStyle: {color: '#444', fontSize: 16}},
-    explorer: {}
+    chartArea: {height:'75%', width:'75%'},
+    explorer: {zoomDelta:1.05, maxZoomIn:0.001}
   };
   var chart = new google.visualization.ScatterChart(document.getElementById('plot'));
   google.visualization.events.addListener(chart, 'ready', myReadyHandler);
@@ -247,6 +250,9 @@ function drawChart(points) {
 }
 
 function myReadyHandler() {
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("ready").style.display = "block";
+  $('#loading').hide();
+  $('#ready').show();
+  if ($(window).width() < 800) {
+    $(document).scrollTop( $('#plot').offset().top );
+  }
 }

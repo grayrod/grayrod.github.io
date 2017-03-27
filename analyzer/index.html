@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="analyzer.css">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="analyzer.js"></script>
+</head>
+
+<body>
+
+    <div id="top">
+
+        <div id="topleft">
+          <!-- <a href="#menu" id="menubtn" class="topbtn">&#9776;</a> -->
+        </div>
+
+        <div id="topmiddle">
+          <h2>Function Analyzer</h2>
+        </div>
+
+        <div id="topright">
+          <a href="#" id="aboutbtn" class="topbtn">&#63;</a>
+        </div>
+
+    </div>
+
+    <div id="info">
+
+        <center><p>Click Evaluate to plot a function over a given x interval, and find its minimum, maximum, and area.
+        <br />
+        Results are generated using recursive numerical integration and differentiation algorithms implemented in JavaScript.
+        <br /></p></center>
+
+        <div id="results">
+            <p>&nbsp;</p>
+        </div>
+
+    </div>
+
+    <div id="main">
+
+        <div id="parameters">
+
+            <div id="inputs">
+                <p><strong>Function of x: </strong><select name="functions" id="functions">
+                    <option value="Math.pow(x-2, 3) - (Math.pow(x, 2) * Math.sin(Math.pow(x, 2))) + Math.pow(x, 2)" xa="2" xb="9.1" tol="0.01">(x-2)^3 - x^2 * sin(x^2) + x^2</option>
+                    <option value="Math.cos(x)*Math.pow(x, 3)" xa="-15" xb="0" tol="0.01">Cos(x) * x^3</option>
+                    <option value="3*Math.pow(x, 5) + 20*Math.pow(x, 4) - 10*Math.pow(x, 3) - 240*Math.pow(x, 2) - 250*x + 200" xa="-6" xb="3" tol="0.01">3x^5 + 20x^4 - 10x^3 - 240x^2 - 250x + 200 "Quinitic"</option>
+                    <option value="Math.pow(x-2,3)/Math.pow(2*x,2)*Math.sin(Math.pow(x,2))" xa="-9" xb="8" tol="0.0001">[(x-2)^3 / 2x^2] * Sin(x^2)</option>
+                    <option value="Math.sin(Math.sqrt(x))" xa="0" xb="50" tol="0.01">Sin( &#8730;x )</option>
+                    <option value="Math.exp(x)/Math.pow(x,2)" xa="0.5" xb="5.5" tol="0.001">e^x / x^2</option>
+                    <option value="1/x" xa="-4" xb="4" tol="0.01">1/x</option>
+                    <option value="Math.pow(x,2)+2" xa="-7" xb="9" tol="0.01">x^2 + 2</option>
+                    <option value="Math.random(x)" xa="0" xb="2" tol="0.01">Bees!</option>
+
+                </select></p>
+                <textarea id="f" rows="4">Math.pow(x-2, 3) - (Math.pow(x, 2) * Math.sin(Math.pow(x, 2))) + Math.pow(x, 2)</textarea><br />
+                <p class="explanation">Enter a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math#Methods" target="_blank">mathematical JavaScript</a> expression using variable x.</p>
+                <br />
+                <p><strong>Interval: </strong><input id="xa" class="interval" type="number" value="2" step="0.1"> to <input id="xb" class="interval" type="number" value="9.1" step="0.1"></p>
+                <p class="explanation">The range of x to evaluate over.</p>
+                <br />
+                <p><strong>Tolerance: </strong>&nbsp;&nbsp;<input type="number" id="tol" value="0.01" step="0.00001"></p>
+                <p class="explanation">The desired degree of accuracy. A smaller value like 0.00001 gives more precise results, and calculates more points.</p>
+                </p>
+
+            </div>
+
+            <div id="ready" style="display:block; margin:auto;">
+                <button type="button" id="evaluate" style="display:block"><strong>Evaluate</strong></button>
+            </div>
+
+            <div id="loading" style="display:none; margin:auto;">
+                <img src='loading.gif' id='loading-image' style='max-width: 100%; max-height: 100%; margin:auto;' />
+            </div>
+
+            <div id="alerts">
+                <!-- infinity alerts will appear here -->
+            </div>
+
+        </div>
+
+        <div id="plot">
+            <!-- google chart will appear here -->
+        </div>
+
+      <div id="about">
+
+          <h4>
+            Function Analyzer is like plot mode in a graphing calculator.
+          </h4>
+
+          <h5>
+            — project 1
+          </h5>
+
+          <p>
+            <strong>It draws the plot of a function.</strong> Calculations are done in JavaScript (<a href="https://github.com/grayrod/grayrod.github.io/tree/master/ne.js" target="_blank"><strong>See the code on GitHub</strong></a>) using bare bones numerical methods — it only uses addition, subtraction, multiplication, and division operations to do calculus.
+          </p>
+
+          <p>
+            <strong>It finds the function's minimum value, maximum value, inflection points, and area</strong> using a combination of recursive algorithms.
+          </p>
+
+          <p>
+            <strong>1) <code>scout();</code></strong> — It starts with a recursive algorithm that adaptively calculates the area of the function using a form of <a href="https://en.wikipedia.org/wiki/Adaptive_quadrature" target="_blank">adaptive quadrature</a>. Less calculations are done when the function doesn't vary much. So, simple functions like f(x) = x<sup>2</sup> + 2 don't cost much to plot. I'm using <a href="https://en.wikipedia.org/wiki/Simpson's_rule" target="_blank">Simpson's rule</a> to calculate each subinterval's area. You control the degree of accuracy. It stops when the next area minus the current area is less than the given tolerance.
+          </p>
+          <p>
+            The points from the area calculation are then used to find inflection points (where the derivative is equal to 0). The inflection points are calculated using two steps:
+          <p>
+            <strong>2) <code>forage();</code></strong> — It does a quick global scan over all the resulting points from #1 to find the intervals that contain inflection points (where the derivative is equal to 0). I'm calculating the slope for an interval, and the slope of its adjacent interval, then mulitplying them together. If it's negative, that means the slope changed direction and the derivative must be zero at somepoint in the range of <em>both</em> intervals. The inflection points are <em>somewhere</em> inside them, not sure exactly where yet.
+          </p>
+          <p>
+            <strong>3) <code>capture();</code></strong> — It does slower local calculations inside the intervals that contain inflection points. It recursively divides these intervals into smaller chunks to narrow in on the inflection points. You decide the degree of accuracy. It stops when the interval is smaller than the given tolerance. I'm using 5 point difference methods at this step to get very precise derivate values as the chunks get smaller and smaller.
+          </p>
+
+          <p>
+            <strong>4) <code>sortMergeData(); getMinMax(); displayResults(); plotPoints();</code></strong> — Finally, the array of inflection points is sorted by the f(x) values, from smallest to largest.  The first element is the global minimum value, and the last element is the global maximum value. The plot is drawn using <a href="https://developers.google.com/chart/interactive/docs/gallery/scatterchart" target="_blank">Google Charts.</a>
+          </p>
+          <p>
+            These algorithms are based on my final project for my Numerical Analysis class back in college timez.
+          </p>
+          <h5 style="font-size:16px; color:#666">
+            — Grayson
+          </h5>
+
+      </div>
+
+    </div>
+
+    <script>
+    $(document).ready(function() {
+        $('#evaluate').click(function() {
+            $('#alerts').empty();
+            $('#ready').hide();
+            $('#loading').show();
+            var delay = setTimeout("analyzeMyFunction( [ $('#xa').val(), $('#xb').val() ], $('#tol').val(), $('#f').val() );", 1000);
+        });
+        $('#functions').on('change',function(){
+            var selectedF = $('option:selected', this).val();
+            var selectedXa = $('option:selected', this).attr("xa");
+            var selectedXb = $('option:selected', this).attr("xb");
+            var selectedTol = $('option:selected', this).attr("tol");
+            $('#f').empty();
+            $('#f').val(selectedF);
+            $('#xa').val(selectedXa);
+            $('#xb').val(selectedXb);
+            $('#tol').val(selectedTol);
+            $('#evaluate').click();
+        });
+        if ($(window).width() > 800) {
+          $('#evaluate').click();
+        }
+        $(window).resize(function(){
+          clearTimeout(delay);
+          var delay = setTimeout(function () {
+            plotPoints();
+          }, 250);
+        });
+        $('#aboutbtn').click(function() {
+           $('#parameters').slideToggle();
+           $('#plot').slideToggle();
+           $('#about').fadeIn();
+           var state = $(this).html();
+           if (state == "?") {
+             $(this).html("X");
+           } else {
+             $(this).html("?");
+           }
+        });
+    });
+    </script>
+
+</body>
+</html>
