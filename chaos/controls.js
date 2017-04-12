@@ -40,7 +40,7 @@ function prepareContainers() {
       $('#zoomin').show();
       $('#speedup').show();
       $('#slowdown').show();
-      $('#loop').show();
+//       $('#loop').show();
       $('#gridsize').hide();
       $('#instructions').hide();
       if (focused.s.looped == true) {
