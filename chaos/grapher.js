@@ -1,59 +1,59 @@
-var chartMap = {};
-var lastChart;
-function PixelGraph(targetDivId, dataProvider, pixelRenderFunction, minX, maxX, minY, maxY, canvasColor, pixelColor) {
+function PixelGraph(divID,data,time,scale,bgColor,pxColor,pxGradientColor) {
+	this.divID = divID;
+	this.targetDiv = $( "#"+this.divID );
+	this.px = {
+		future: data,
+		time: time,
+		now: [data[time]],
+		history: [],
+		color1: pxColor ? pxColor : "rbg(0,0,0)",
+		color2: pxGradientColor ? pxGradientColor : "rbg(255,255,255)",
+	};
+	this.scale = scale ? scale: 1;
+	this.bgColor = bgColor ? bgColor : "rbg(255,255,255)";
+	this.gradient = this.createGradient(this.px.color1, this.px.color2, 9);
 
-	chartMap[ targetDivId ] = this;
-
-	this.targetDivId = targetDivId;
-	this.targetDiv = $( "#"+this.targetDivId );
-	this.dataProvider = dataProvider;
-	this.minX = minX;
-	this.maxX = maxX;
-	this.minY = minY;
-	this.maxY = maxY;
-	this.canvasColor = canvasColor;
-	this.pixelColor = pixelColor;
-
-	if (pixelRenderFunction != undefined && pixelRenderFunction != null)
-		this.pixelRenderFunction = pixelRenderFunction;
-	else
-		this.pixelRenderFunction = draw1x1;
-
-	this.draw5x4 = draw5x4;
-	this.draw5x3 = draw5x3;
-	this.draw3x3 = draw3x3;
-	this.draw3x1 = draw3x1;
-	this.draw2x2 = draw2x2;
-	this.draw1x1 = draw1x1;
-
-	this.horizontalAttribute = "x";
-	this.horizontalMin = this.minX;
-	this.horizontalMax = this.maxX;
-	this._horizontalMin = undefined;
-	this._horizontalMax = undefined;
-
-	this.verticalAttribute = "y";
-	this.verticalMin = this.minY;
-	this.verticalMax = this.maxY;
-	this._verticalMin = undefined;
-	this._verticalMax = undefined;
-	this.borderSize = 0;
-
-	this.rgbg = [];
-	this.gradient(this.pixelColor, 255, 12);
-
-	lastChart = this;
-	this.validateLayout();
+	this.prepare();
+	this.create();
 }
 
+PixelGraph.prototype.prepare = function() {
+	this.setScale();
+  this.cumulate();
+}
 
-PixelGraph.prototype.validateLayout = function( event ) {
-	var chart = lastChart;
-	if (chart.canvas)
-		chart.canvas.remove();
-	chart.canvas = $( "<canvas width='" + chart.targetDiv.width() + "' height='" + chart.targetDiv.height() + "' />" );
-	chart.targetDiv.html( chart.canvas );
-	chart.render();
+PixelGraph.prototype.cumulate = function() {
+	this.px.history = this.px.future.slice(0,this.px.time);
+	this.px.now = [this.px.history[this.px.history.length - 1]];
+}
+
+PixelGraph.prototype.setScale = function() {
+	this.xMin = this.scale * Math.min.apply(null, this.px.future.map(
+		function(o){return o.x;}));
+	this.xMax = this.scale * Math.max.apply(null, this.px.future.map(
+		function(o){return o.x;}));
+	this.yMin = this.scale * Math.min.apply(null, this.px.future.map(
+		function(o){return o.y;}));
+	this.yMax = this.scale * Math.max.apply(null, this.px.future.map(
+		function(o){return o.y;}));
+}
+
+PixelGraph.prototype.setSize = function() {
+	this.divW = this.targetDiv.width();
+	this.divH = this.targetDiv.height();
+}
+
+PixelGraph.prototype.create = function( event ) {
+	if (this.canvas) {this.canvas.remove();}
+	this.setSize();
+	this.canvas = $("<canvas width='"+this.divW+"' height='"+this.divH+"' />");
+	this.targetDiv.html( this.canvas );
+
+	var ctx = this.canvas[0].getContext("2d");
+	ctx.fillStyle = this.bgColor;
+	ctx.fillRect(0, 0, this.divW, this.divH);
+
+	this.render();
 }
 
 PixelGraph.prototype.width = function() {
@@ -64,194 +64,165 @@ PixelGraph.prototype.height = function() {
 	return this.targetDiv.height();
 }
 
-PixelGraph.prototype.render = function() {
-	var i = 0;
-	var w = this.targetDiv.width();
-	var h = this.targetDiv.height();
-	var chartW = w - 2*this.borderSize;
-	var chartH = h - 2*this.borderSize;
-
+PixelGraph.prototype.render = function(clear) {
 	var ctx = this.canvas[0].getContext("2d");
-	ctx.fillStyle = this.canvasColor;
-	ctx.fillRect (0, 0, w, h);
-
- 	var imageData = ctx.getImageData(0, 0, w, h);
-
-	if (isNaN( this._horizontalMax)) {
-		this._horizontalMin = this.horizontalMin;
-		this._horizontalMax = this.horizontalMax;
-		this._verticalMin = this.verticalMin;
-		this._verticalMax = this.verticalMax;
+	if (clear) {
+		ctx.fillStyle = this.bgColor;
+		ctx.fillRect(0, 0, this.divW, this.divH);
 	}
-
-	var horizontalDiff = this._horizontalMax - this._horizontalMin;
-	var verticalDiff = this._verticalMax - this._verticalMin;
-
-	var _x;
-	var _y;
+ 	var imageData = ctx.getImageData(0, 0, this.divW, this.divH);
+	var xDiff = this.xMax - this.xMin;
+	var yDiff = this.yMax - this.yMin
+	var x;
+	var y;
 	var o;
-
-	for (var i=0; i < this.dataProvider.length; i++) {
-		o = this.dataProvider[i];
-		_x = (o[this.horizontalAttribute] - this._horizontalMin) / horizontalDiff;
-		_y = (o[this.verticalAttribute] - this._verticalMin) / verticalDiff;
-
-		_x = parseInt( this.borderSize+(_x * chartW) );
-		_y = parseInt( this.borderSize+(chartH-(_y * chartH)) );
-
-		if ( _x > this.borderSize && _x < w - this.borderSize &&
-			_y > this.borderSize && _y < h - this.borderSize)
-		// {
-		// 	this.pixelRenderFunction( _x, _y, o, imageData );
-		// }
-
-		{
-			if (i < 25 && i > -1) {
-				this.draw5x4( _x, _y, o, imageData, this.rgbg[0][0], this.rgbg[1][0], this.rgbg[2][0] );
-			} else if  (i < 50 && i > 24) {
-				this.draw5x4( _x, _y, o, imageData, this.rgbg[0][1], this.rgbg[1][1], this.rgbg[2][1] );
-			} else if  (i < 100 && i > 49) {
-				this.draw5x3( _x, _y, o, imageData, this.rgbg[0][2], this.rgbg[1][2], this.rgbg[2][2] );
-			} else if (i < 150 && i > 99) {
-				this.draw3x3( _x, _y, o, imageData, this.rgbg[0][3], this.rgbg[1][3], this.rgbg[2][3] );
-			} else if (i < 200 && i > 149) {
-				this.draw3x1( _x, _y, o, imageData, this.rgbg[0][4], this.rgbg[1][4], this.rgbg[2][4] );
-			} else if (i < 250 && i > 199) {
-				this.draw3x1( _x, _y, o, imageData, this.rgbg[0][5], this.rgbg[1][5], this.rgbg[2][5] );
-			} else if (i < 500 && i > 249) {
-				this.draw2x2( _x, _y, o, imageData, this.rgbg[0][4], this.rgbg[1][6], this.rgbg[2][6] );
-			} else if (i < 2000 && i > 499) {
-				this.draw1x1( _x, _y, o, imageData, this.rgbg[0][3], this.rgbg[1][7], this.rgbg[2][7] );
-			} else if (i < 4000 && i > 1999) {
-				this.draw1x1( _x, _y, o, imageData, this.rgbg[0][2], this.rgbg[1][8], this.rgbg[2][8] );
-			} else if (i < 6000 && i > 3999) {
-				this.draw1x1( _x, _y, o, imageData, this.rgbg[0][1], this.rgbg[1][9], this.rgbg[2][9] );
-			} else if (i < 8000 && i > 5999) {
-				this.draw2x2( _x, _y, o, imageData, this.rgbg[0][0], this.rgbg[1][10], this.rgbg[2][10] );
-			} else if (i < 10000 && i > 7999) {
-				this.draw3x3( _x, _y, o, imageData, this.rgbg[0][0], this.rgbg[1][11], this.rgbg[2][11] );
-			}
+	for (var i=0; i < this.px.history.length; i++) {
+		o = this.px.history[i];
+		x = (o.x - this.xMin) / xDiff;
+		y = (o.y - this.yMin) / yDiff;
+		x = parseInt(x * this.divW);
+		y = parseInt(y * this.divH);
+		if (x > 0 && x < this.divW && y > 0 && y < this.divH) {
+			this.scalePixel(i, x, y, imageData);
 		}
-
-
 	}
-
 	ctx.putImageData(imageData, 0, 0);
-
 }
 
-
-PixelGraph.prototype.gradient = function(rgb,d,n) {
-	  var rgb = parseRGB(rgb);
-	  for (var i=1; i<4; i++) {
-	    this.rgbg.push(singleGradient(rgb[i],d,n));
-	  }
-
-		function parseRGB(rgb) {
-		  var rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
-		  return (rgb && rgb.length === 4) ? rgb : null;
-		}
-
-		function singleGradient(c,d,n) {
-			c = parseInt(c);
-			shift = parseInt(d) - c;
-			var colors = [c];
-			for (var i=1; i<n; i++) {
-		    colors.push(Math.round( shift * (i/n) ) + c);
-		  }
-		  return colors;
-		}
+PixelGraph.prototype.update = function(clear) {
+	var ctx = this.canvas[0].getContext("2d");
+	if (clear) {
+		ctx.fillStyle = this.bgColor;
+		ctx.fillRect(0, 0, this.divW, this.divH);
+	}
+ 	var imageData = ctx.getImageData(0, 0, this.divW, this.divH);
+	var xDiff = this.xMax - this.xMin;
+	var yDiff = this.yMax - this.yMin
+	var x;
+	var y;
+	var o;
+	var newLen = this.px.history.length
+	o = this.px.history[newLen - 1];
+	x = (o.x - this.xMin) / xDiff;
+	y = (o.y - this.yMin) / yDiff;
+	x = parseInt(x * this.divW);
+	y = parseInt(y * this.divH);
+	if (x > 0 && x < this.divW && y > 0 && y < this.divH) {
+    var i = newLen;
+		this.scalePixel(i, x, y, imageData);
+	}
+	ctx.putImageData(imageData, 0, 0);
 }
 
 PixelGraph.prototype.setPixel = function(imageData, x, y, r, g, b, a) {
-    index = (x + y * imageData.width) * 4;
-    imageData.data[index+0] = r;
-    imageData.data[index+1] = g;
-    imageData.data[index+2] = b;
-    imageData.data[index+3] = a;
+  index = Math.abs((x + y * imageData.width) * 4);
+  imageData.data[index+0] = r;
+  imageData.data[index+1] = g;
+  imageData.data[index+2] = b;
+  imageData.data[index+3] = a;
 }
 
-function draw1x1( x, y, data, imageData, r, g, b ) {
-	PixelGraph.prototype.setPixel(imageData, x, y, r, g, b, 0xFF)
+PixelGraph.prototype.shape = function(c, d, x, y, imageData, r, g, b, a) {
+	this.setPixel(imageData, x, y, r, g, b, a);
+	// c = 5, d = 4
+	var cc = (c - 1) / 2;
+	// draw a cross of length c:
+	for (var i = 1; i <= cc; i++) {
+		this.setPixel(imageData, x, y+i, r, g, b, a);
+		this.setPixel(imageData, x, y-i, r, g, b, a);
+		this.setPixel(imageData, x+i, y, r, g, b, a);
+		this.setPixel(imageData, x-i, y, r, g, b, a);
+	}
+	// draw pixels in each quadrant
+	var dd = d - 2;
+	for (var i = 1; i <= dd; i++) {
+		if (i % 2 !== 0) { // odd numbers always draw 1 pixel in each quadrant
+			var ii = (i + 1) / 2;  // 1 -> 1,  3 -> 2,  5 -> 3 ...
+			this.setPixel(imageData, x+ii, y+ii, r, g, b, a);
+			this.setPixel(imageData, x+ii, y-ii, r, g, b, a);
+			this.setPixel(imageData, x-ii, y+ii, r, g, b, a);
+			this.setPixel(imageData, x-ii, y-ii, r, g, b, a);
+		} else {
+			var ii = (i / 2) + 1;   // 2 -> 2, 4 -> 3, 6 -> 4
+			for (var j = 1; j < ii; j++) {
+				this.setPixel(imageData, x+j, y+ii, r, g, b, a);
+				this.setPixel(imageData, x+ii, y+j, r, g, b, a);
+
+				this.setPixel(imageData, x+j, y-ii, r, g, b, a);
+				this.setPixel(imageData, x+ii, y-j, r, g, b, a);
+
+				this.setPixel(imageData, x-j, y+ii, r, g, b, a);
+				this.setPixel(imageData, x-ii, y+j, r, g, b, a);
+
+				this.setPixel(imageData, x-j, y-ii, r, g, b, a);
+				this.setPixel(imageData, x-ii, y-j, r, g, b, a);
+			}
+		}
+	}
 }
 
-function draw2x2( x, y, data, imageData, r, g, b ) {
-	PixelGraph.prototype.setPixel(imageData, x, y, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x, y-1, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x-1, y, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x-1, y-1, r, g, b, 0xFF);
+PixelGraph.prototype.scalePixel = function (i, x, y, imageData) {
+	var a = 250;
+	if (i < 25 && i > -1) {
+		this.shape(7, 6, x, y, imageData,
+			this.gradient[0][0], this.gradient[1][0],this.gradient[2][0], a );
+	} else if (i < 50 && i > 24) {
+		this.shape(7, 5, x, y, imageData,
+			this.gradient[0][1], this.gradient[1][1], this.gradient[2][1], a );
+	} else if (i < 100 && i > 49) {
+		this.shape(5, 4, x, y, imageData,
+			this.gradient[0][2], this.gradient[1][2], this.gradient[2][2], a );
+	} else if (i < 150 && i > 99) {
+		this.shape(5, 3, x, y, imageData,
+			this.gradient[0][3], this.gradient[1][3], this.gradient[2][3], a );
+	} else if (i < 200 && i > 149) {
+		this.shape(3, 3, x, y, imageData,
+			this.gradient[0][4], this.gradient[1][4], this.gradient[2][4], a );
+	} else if (i < 250 && i > 199) {
+		this.shape(3, 1, x, y, imageData,
+			this.gradient[0][5], this.gradient[1][5], this.gradient[2][5], a );
+	} else if (i < 500 && i > 249) {
+		this.shape(3, 1, x, y, imageData,
+			this.gradient[0][6], this.gradient[1][6], this.gradient[2][6], a );
+	} else if (i < 2000 && i > 499) {
+		this.shape(1, 1, x, y, imageData,
+			this.gradient[0][7], this.gradient[1][7], this.gradient[2][7], a );
+	} else if (i < 4000 && i > 1999) {
+		this.shape(1, 1, x, y, imageData,
+			this.gradient[0][8], this.gradient[1][8], this.gradient[2][8], a );
+	} else if (i < 6000 && i > 3999) {
+		this.shape(1, 1, x, y, imageData,
+			this.gradient[0][7], this.gradient[1][7], this.gradient[2][7], a );
+	} else if (i < 8000 && i > 5999) {
+		this.shape(3, 1, x, y, imageData,
+			this.gradient[0][6], this.gradient[1][6], this.gradient[2][6], a );
+	} else if (i < 10000 && i > 7999) {
+		this.shape(3, 3, x, y, imageData,
+			this.gradient[0][5], this.gradient[1][5], this.gradient[2][5], a );
+	}
 }
 
+PixelGraph.prototype.createGradient = function(rgb,rgbd,n) {
+	var rgb = parseRGB(rgb);
+	var rgbd = parseRGB(rgbd);
+	var rgbGradient = []
+	for (var i=1; i<4; i++) {
+    rgbGradient.push(singleGradient(rgb[i],rgbd[i],n));
+  }
+	return rgbGradient;
 
-function draw3x1( x, y, data, imageData, r, g, b ) {
-	PixelGraph.prototype.setPixel(imageData, x, y, r, g, b, 0xFF);
-
-	PixelGraph.prototype.setPixel(imageData, x-1, y, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x+1, y, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x, y-1, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x, y+1, r, g, b, 0xFF);
-}
-
-
-function draw3x3( x, y, data, imageData, r, g, b ) {
-	PixelGraph.prototype.setPixel(imageData, x, y, r, g, b, 0xFF);
-
-	PixelGraph.prototype.setPixel(imageData, x-1, y, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x+1, y, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x, y-1, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x, y+1, r, g, b, 0xFF);
-
-	PixelGraph.prototype.setPixel(imageData, x-1, y-1, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x-1, y+1, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x+1, y-1, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x+1, y+1, r, g, b, 0xFF);
-}
-
-function draw5x3( x, y, data, imageData, r, g, b ) {
-	PixelGraph.prototype.setPixel(imageData, x, y, r, g, b, 0xFF);
-
-	PixelGraph.prototype.setPixel(imageData, x, y-1, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x, y+1, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x, y-2, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x, y+2, r, g, b, 0xFF);
-
-	PixelGraph.prototype.setPixel(imageData, x-1, y, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x+1, y, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x-2, y, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x+2, y, r, g, b, 0xFF);
-
-	PixelGraph.prototype.setPixel(imageData, x-1, y-1, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x-1, y+1, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x+1, y-1, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x+1, y+1, r, g, b, 0xFF);
-
-}
-
-function draw5x4( x, y, data, imageData, r, g, b ) {
-	PixelGraph.prototype.setPixel(imageData, x, y, r, g, b, 0xFF);
-
-	PixelGraph.prototype.setPixel(imageData, x, y-1, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x, y+1, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x, y-2, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x, y+2, r, g, b, 0xFF);
-
-	PixelGraph.prototype.setPixel(imageData, x-1, y, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x+1, y, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x-2, y, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x+2, y, r, g, b, 0xFF);
-
-	PixelGraph.prototype.setPixel(imageData, x-1, y-1, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x-1, y+1, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x+1, y-1, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x+1, y+1, r, g, b, 0xFF);
-
-	PixelGraph.prototype.setPixel(imageData, x-2, y-1, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x-2, y+1, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x+2, y-1, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x+2, y+1, r, g, b, 0xFF);
-
-	PixelGraph.prototype.setPixel(imageData, x-1, y-2, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x-1, y+2, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x+1, y-2, r, g, b, 0xFF);
-	PixelGraph.prototype.setPixel(imageData, x+1, y+2, r, g, b, 0xFF);
+	function parseRGB(rgb) {
+	  var rgb = rgb.match(
+			/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
+	  return (rgb && rgb.length === 4) ? rgb : null;
+	}
+	function singleGradient(c,d,n) {
+		c = parseInt(c);
+		shift = parseInt(d) - c;
+		var colors = [c];
+		for (var i=1; i<n; i++) {
+	    colors.push(Math.round( shift * (i/n) ) + c);
+	  }
+	  return colors;
+	}
 }

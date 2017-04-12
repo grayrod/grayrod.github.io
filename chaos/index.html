@@ -12,11 +12,11 @@
     <script type="text/javascript" src="grapher.js"></script>
     <script type="text/javascript" src="graph.js"></script>
     <script type="text/javascript" src="params.js"></script>
+    <script type="text/javascript" src="controls.js"></script>
 </head>
 
 <body>
   <div id="top">
-
       <div id="topleft">
         <div id="menu" class="topbtn" style="display:none">
           <p> _ <br /> _ <br /> _ <br /></p>
@@ -26,25 +26,14 @@
         </div>
       </div>
 
-      <div id="topmiddle">
-        <div id="params4" class="params">
-          <p></p>
-        </div>
-        <div id="params3" class="params">
-          <p></p>
-        </div>
-        <div id="params2" class="params">
-          <p></p>
-        </div>
-        <div id="params1" class="params">
-          <p></p>
-        </div>
-      </div>
+      <!-- <div id="topmiddle">
+      </div> -->
 
       <div id="topright">
         <div id="playpause" class="topbtn" style="letter-spacing:-2px" onclick="playPause()">
-          <p>|| </p>
+          <p>||</p>
         </div>
+
         <div id="speedup" class="topbtn" style="display:none; letter-spacing:-6px" onclick="speedUp()">
           <p>>></p>
         </div>
@@ -52,7 +41,7 @@
           <p><<&nbsp;</p>
         </div>
         <div id="loop" class="topbtn" style="display:none" onclick="loopUnloop()">
-          <p>O</p>
+          <p>o</p>
         </div>
         <div id="zoomin" class="topbtn" style="display:none" onclick="zoomIn()">
           <p>+</p>
@@ -63,316 +52,79 @@
         <div id="instructions" width="300px" height="47px" style="display:none">
           <p>Click a graph!</p>
         </div>
+
+        <div id="mode" class="topbtn dropdown">
+          <p>Mode</p>
+          <div class="dropdown-content" style="display:none">
+            <a class="gm" href="#" graph-mode="warpPath">Warp Path</a>
+            <a class="gm" href="#" graph-mode="warp">Warp</a>
+            <a class="gm" href="#" graph-mode="particlePath">Particle Path</a>
+            <a class="gm" href="#" graph-mode="particle">Particle</a>
+          </div>
+        </div>
+        <div id="type" class="topbtn dropdown">
+          <p>Type</p>
+          <div class="dropdown-content" style="display:none">
+            <a class="gs" href="#" graph-set="miraWarp">Galaxies</a>
+            <a class="gs" href="#" graph-set="drunk">Squiggles</a>
+            <a class="gs" href="#" graph-set="waves">Waves</a>
+            <a class="gs" href="#" graph-set="shields">Shields</a>
+            <a class="gs" href="#" graph-set="randomMiraPs">Shape Spirals</a>
+            <a class="gs" href="#" graph-set="randomShield">Structures</a>
+            <a class="gs" href="#" graph-set="swirls">Swirls</a>
+            <a class="gs" href="#" graph-set="randomSquiggleF">Lines n Stuff</a>
+          </div>
+        </div>
+        <div id="gridsize" class="topbtn dropdown">
+          <p>Size</p>
+          <div class="dropdown-content" style="display:none">
+            <a class="gl" href="#" graph-length="1">1x1</a>
+            <a class="gl" href="#" graph-length="2">2x2</a>
+            <a class="gl" href="#" graph-length="3">3x3</a>
+            <a class="gl" href="#" graph-length="4">4x4</a>
+            <a class="gl" href="#" graph-length="5">5x5</a>
+            <a class="gl" href="#" graph-length="6">6x6</a>
+            <a class="gl" href="#" graph-length="7">7x7</a>
+            <a class="gl" href="#" graph-length="8">8x8</a>
+            <a class="gl" href="#" graph-length="9">9x9</a>
+            <a class="gl" href="#" graph-length="10">10x10</a>
+          </div>
+        </div>
         <!-- <div id="colors" class="topbtn">
           <p>c</p>
-        </div> -->
-        <!-- <div id="mode" class="topbtn" onclick="changeParams(0, genSet1);changeParams(1, genSet2)">
-          <p>*</p>
         </div> -->
         <!-- <div id="about" class="topbtn">
           <p>?</p>
         </div> -->
       </div>
-
   </div>
 
   <div id="main">
-    <div class="container">
-      <div class="graph" id="graph1"></div>
-    </div>
-    <div class="container">
-      <div class="graph" id="graph2"></div>
-    </div>
-    <div class="container">
-      <div class="graph" id="graph3"></div>
-    </div>
-    <div class="container">
-      <div class="graph" id="graph4"></div>
-    </div>
- </div>
-
- <div id="bottom">
-   <a href="https://github.com/grayrod/grayrod.github.io/tree/master/chaos" target="_blank">GitHub</a>
-</div>
+  </div>
 
  </body>
 
 <script>
-$(document).ready(function() {
-  graphArray = [];
-  genArray = ["shuffle", "shuffle", "shuffle", "shuffle"];
+  var colorKeys = Object.keys(gradients);
+  var gsets = {
+    miraWarp: {mode:'warp', map:gumMira, param:'randomMira'},
+    drunk: {mode:'particlePath', map:squiggle, param:parameters.squiggle.cloud4},
+    waves: {mode:'warp', map:squiggleWaves, param:parameters.squiggle.cloudWaves},
+    shields: {mode:'particlePath', map:shieldB, param:parameters.shieldB.honeycomb},
+    eyes: {mode:'particlePath', map:squiggleF, param:parameters.squiggleF.circles},
+    twists: {mode:'warp', map:shieldB, param:parameters.shieldB.honeycomb},
+    randomMiraPs: {mode:'particlePath', map:gumMira, param:'randomMiraPath'},
+    randomShield: {mode:'particlePath', map:shield, param:'randomShield'},
+    swirls: {mode:'warpPath', map:shieldB, param:parameters.shieldB.swirls},
+    randomSquiggleF: {mode:'particlePath', map:squiggleF, param:'randomSquiggleF'}
+  };
+  var gl = 3;
+  var gs = gsets.miraWarp;
+  var focus = null;
 
-  var countdown1 = setTimeout(function() {
-    graph1 = new Graph("graph1", "params1", genArray[0], colors.darkgray, draw2x2, colors.lime );
-    graphArray.push(graph1);
-    graph1.initialize();
-    graph1.start();
-  },100);
-
-  var countdown2 = setTimeout(function() {
-    graph2 = new Graph("graph2", "params2", genArray[1], colors.darkgray, draw2x2, colors.magenta );
-    graphArray.push(graph2);
-    graph2.initialize();
-    graph2.start();
-  },1300);
-
-  var countdown3 = setTimeout(function() {
-    graph3 = new Graph("graph3", "params3", genArray[2], colors.darkgray, draw2x2, colors.yellow );
-    graphArray.push(graph3);
-    graph3.initialize();
-    graph3.start();
-  },2500);
-
-  var countdown4 = setTimeout(function() {
-    graph4 = new Graph("graph4", "params4", genArray[3], colors.darkgray, draw2x2, colors.cyan );
-    graphArray.push(graph4);
-    graph4.initialize();
-    graph4.start();
-    $('#instructions').show()
-  },3700);
-
-});
-
-var focus = null;
-var ll = $( '#loop > p' );
-var pp = $( '#playpause > p' );
-
-$('div.container').mousedown(function(){
-
-  if (focus == null) {
-
-    focus = $(this).index();
-    focused = graphArray[focus];
-    pauseAllExceptMe();
-    $('div.container').each(function(){
-      if ($(this).index() != focus) {
-        $(this).hide();
-      }
-    });
-    $(this).css("width", "100%");
-    $(this).css("height", "100%");
-    $('#zoomout').show();
-    $('#zoomin').show();
-    $('#speedup').show();
-    $('#slowdown').show();
-    $('#loop').show();
-    $('#instructions').hide()
-    if (focused.s.looped == true) {
-      ll.html('!o');
-    } else {
-      ll.html('o');
-    }
-    if (focused.s.paused == true) {
-      pp.html('>');
-    } else {
-      pp.html('||');
-    }
-    focused.n = 10000;
-    focused.draw();
-
-  } else {
-    if (focused.s.paused == false) {
-      focused.stop();
-    }
-    focused.n = 3000;
-    $(this).css("width", "50%");
-    $(this).css("height", "50%");
-    $('div.container').each(function(){
-      var index = $(this).index();
-      if (index != focus) {
-        $(this).show();
-        graphArray[index].draw();
-      }
-    });
-    focused.draw();
-    $('#zoomout').hide();
-    $('#zoomin').hide();
-    $('#speedup').hide();
-    $('#slowdown').hide();
-    $('#loop').hide();
-    pp.html('||');
-    playAllExceptPaused();
-    focus = null;
-
-  }
-
-});
-
-$(window).resize(resizeGraphs());
-
- if ( window.orientation != undefined )
-   window.onorientationchange = resizeGraphs();
-
-function resizeGraphs() {
-  if (typeof graphArray !== 'undefined') {
-    pauseAllExceptPaused();
-    clearTimeout(waiter);
-    waiter = setTimeout(function() {
-      playAllExceptPaused();
-    }, 100);
-  }
-}
-
-function playPause() {
-  if (focus != null) {
-      if (focused.s.paused == false) {
-        pauseMe();
-      } else {
-        playMe();
-      }
-  } else {
-      if (pp.html() == "||") {
-        pauseAll();
-      } else {
-        playAll();
-      }
-  }
-  // logPausedStates();
-}
-
-function pauseAll() {
-  for (var i=0; i<4; i++) {
-    if (graphArray[i].s.paused == false) {
-      graphArray[i].stop();
-      graphArray[i].s.paused = true;
-    }
-  }
-  pp.html('>');
-}
-
-function playAll() {
-  for (var i=0; i<4; i++) {
-    graphArray[i].resume();
-    graphArray[i].s.paused = false;
-  }
-  pp.html('||');
-}
-
-function pauseMe() {
-  focused.stop();
-  focused.s.paused = true;
-  pp.html('>');
-}
-
-function playMe() {
-  focused.resume();
-  focused.s.paused = false;
-  pp.html('||');
-}
-
-function pauseAllExceptMe() {
-  var len = $('div.container').length;
-  for (var i=0; i<len; i++) {
-    if (i != focus) {
-      graphArray[i].stop();
-    }
-  }
-}
-
-function pauseAllExceptPaused() {
-  for (var i=0; i<4; i++) {
-    if (graphArray[i].s.paused == false) {
-      graphArray[i].stop();
-    }
-  }
-}
-
-function playAllExceptPaused() {
-  for (var i=0; i<4; i++) {
-    if (graphArray[i].s.paused == false) {
-      graphArray[i].resume();
-    }
-  }
-  pp.html('||');
-}
-
-function loopUnloop() {
-  if (focused.s.looped == false) {
-    loopMe();
-  } else {
-    unLoopMe();
-  }
-}
-
-function loopMe() {
-  focused.s.looped = true;
-  ll.html('&#216;');
-  // logLoopedStates();
-}
-
-function unLoopMe() {
-  focused.s.looped = false;
-  ll.html('o');
-  // logLoopedStates();
-}
-
-function changeParams(i,paramsObject) {
-  graphArray[i].o = paramsObject;
-  graphArray[i].stop();
-  graphArray[i].initialize();
-  graphArray[i].start();
-}
-
-function zoomOut() {
-  if (focused.zi > 0) {
-    focused.zi = focused.zi - 1;
-    focused.scale = focused.zf[focused.zi];
-    if (focused.s.paused == true) {
-      focused.draw();
-    }
-  }
-}
-
-function zoomIn() {
-  if (focused.zi < 23) {
-    focused.zi = focused.zi + 1;
-    focused.scale = focused.zf[focused.zi];
-    if (focused.s.paused == true) {
-      focused.draw();
-    }
-  }
-  console.log(focused.zi);
-}
-
-function slowDown() {
-  if (focused.br > 0.000001) {
-    focused.br = (focused.br)/10;
-  }
-  if (focused.s.accelerated != true) {
-    focused.s.accelerated = true;
-  }
-  // logAcceleratedStates();
-}
-
-function speedUp() {
-  if (focused.br < 0.1) {
-    focused.br = (focused.br)*10;
-  }
-  if (focused.s.accelerated != true) {
-    focused.s.accelerated = true;
-  }
-  // logAcceleratedStates();
-}
-
-// function logPausedStates() {
-//   console.log("paused state");
-//   for (var i=0; i<4; i++) {
-//     console.log(i + ": " + graphArray[i].s.paused);
-//   }
-// }
-// function logLoopedStates() {
-//   console.log("looped state");
-//   for (var i=0; i<4; i++) {
-//     console.log(i + ": " + graphArray[i].s.looped);
-//   }
-// }
-// function logAcceleratedStates() {
-//   console.log("accelerated state");
-//   for (var i=0; i<4; i++) {
-//     console.log(i + ": " + graphArray[i].s.accelerated);
-//   }
-// }
-
+  $(document).ready(function() {
+    createGraphs();
+    prepareButtons();
+  });
  </script>
-
 </html>

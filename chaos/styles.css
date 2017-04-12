@@ -6,7 +6,7 @@
 html, body {
   height: 100%;
   width: 100%;
-  background-color: #141414;
+  background-color: rgb(30,30,30);
 }
 
 p  {
@@ -15,7 +15,7 @@ p  {
 
 div#top {
   height:42px;
-  width:99%;
+  width:calc(100%-1px);
   border-style: ridge;
   border-width: 5px;
   background-color: #222;
@@ -24,7 +24,7 @@ div#top {
 div#topleft {
   display:block;
   float:left;
-  width: 30%;
+  width: 40%;
   height: inherit;
 }
 
@@ -42,10 +42,10 @@ div#name p {
   color: white;
 }
 
-div#topmiddle {
+/*div#topmiddle {
   display:block;
   float:left;
-  width: 40%;
+  width: 10%;
   height: inherit;
   background-color: #222;
   text-align: center;
@@ -59,25 +59,12 @@ div#topmiddle div p {
   font-size: 18px;
   font-family: 'VT323', monospace;
   margin-top: 3px;
-}
-
-div#params1 p {
-  color: #4bf589;
-}
-div#params2 p {
-  color: #f100f1;
-}
-div#params3 p {
-  color: #cccc00;
-}
-div#params4 p {
-  color: #00d4d9;
-}
+}*/
 
 div#topright {
    display:block;
    float:right;
-   width: 30%;
+   width: 60%;
    height: inherit;
 }
 
@@ -91,6 +78,7 @@ div.topbtn {
   width: 42px;
   /*border-style: inset;
   border-width: 2px;*/
+  cursor: pointer;
 }
 
 div.topbtn p {
@@ -153,31 +141,94 @@ div#zoomin {
   display:none;
 }
 div#playpause {
-  background-color: #666;
+  background-color: #777;
 }
 div#playpause p {
   font-size: 30px;
   margin-top: 2px;
 }
 
+
+div.dropdown {
+  width:50px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+div.dropdown p {
+  font-size: 26px;
+  margin-top: 5px;
+}
+div.dropdown a {
+  font-size: 20px;
+  margin-top: 5px;
+  letter-spacing: 1px;
+}
+div#gridsize {
+  background-color: #333;
+}
+div#type {
+  background-color: #444;
+}
+div#mode {
+  background-color: #555;
+}
+
+.dropdown-content {
+    display: none;
+    position: relative;
+    top: 6px;
+    left: 20px;
+    background-color: #eee;
+    min-width: 90px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+#mode > div {
+    min-width: 136px;
+    left: 66px;
+}
+#mode > div > a {
+    text-align: left;
+}
+#type > div {
+    min-width: 160px;
+    left: 90px;
+}
+#type > div > a {
+    text-align: left;
+}
+.dropdown-content a {
+    color: black;
+    padding: 4px 4px 5px 7px;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+    font-size: 24px;
+    font-family: 'VT323', monospace;
+    letter-spacing: 3px;
+}
+.dropdown-content a:hover {
+  background-color: #f1f1f1
+}
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
+
+
 div#main {
+  margin:auto;
   width: 100%;
-  height: calc(100% - 82px);
-  background-color: #141414;
+  height: calc(100% - 58px);
 }
 
-div#bottom {
-  height:30px;
-  width:100%;
-  background-color: #1c1c1c;
-  text-align: right;
+
+ div.container {
+   float: left;
+   cursor: pointer;
  }
-
-div.container {
-  width: 50%;
-  height: 50%;
-  float: left;
-}
 
 div.graph {
   width: 100%;
