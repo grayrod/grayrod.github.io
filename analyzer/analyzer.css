@@ -74,6 +74,45 @@ p  {
     font-weight: bold;
     font-size: 19px;
     color: #666;
+    cursor: pointer;
+}
+div.dropdown a {
+  font-size: 20px;
+  margin-top: 5px;
+  letter-spacing: 1px;
+}
+.dropdown-content {
+    display: none;
+    position: relative;
+    top: 7px;
+    left: 0px;
+    background-color: #eee;
+    min-width: 120px;
+    min-height: 54px;
+    padding: 4px;
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 1px;
+    z-index: 1;
+}
+.dropdown-content a {
+    color: black;
+    padding: 4px 4px 5px 7px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+    font-size: 16px;
+    font-family: "Comic Sans MS", "Helvetica", sans-serif;
+    letter-spacing: 3px;
+}
+.dropdown-content a:hover {
+  background-color: rgba(50, 205, 205, 0.2);
+}
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
 }
 #aboutbtn {
     display: block;

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	    <meta charset="utf-8">
+	    <title> jQuery Wiggle </title>
+	    <link rel="canonical" href="http://sizeof.cat/jquery/wiggle/">
+	    <link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+	</head>
+
+<body class="theme-base-0g">
+
+	<div class="wrap">
+		<div class="masthead">
+			<div class="container">
+				<h3 class="masthead-title">
+					<a href="http://sizeof.cat/" title="Home">Home</a> &raquo; 
+					<a href="http://sizeof.cat/jquery" title="jQuery plugins">jQuery</a> &raquo;
+					jQuery Wiggle
+				</h3>
+			</div>
+		</div>
+		<div class="container content">
+			<h1 class="post-title">jQuery Wiggle</h1>
+			<section id="main">
+				<p>This <a href="http://www.jquery.com">jQuery</a> plugin allows you to emulate the wiggle effect icons on an iPhone have when you press and hold down on them.</p>
+
+<p></p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Language</td>
+<td>Javascript</td>
+</tr>
+
+<tr>
+<td>License</td>
+<td><a href="https://github.com/sizeofcat/jquery-wiggle/blob/master/LICENSE">MIT</a></td>
+</tr>
+
+<tr>
+<td>Version</td>
+<td>2.0.0</td>
+</tr>
+
+<tr>
+<td>Release date</td>
+<td>January 22, 2017</td>
+</tr>
+
+<tr>
+<td>Download</td>
+<td><a href="https://github.com/sizeofcat/jquery-wiggle/archive/master.zip">zip archive</a></td>
+</tr>
+
+<tr>
+<td>Source</td>
+<td><code>git clone https://github.com/sizeofcat/jquery-wiggle.git</code></td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="setup">Setup</h2>
+
+<p>First you need to include the jQuery library, since Wiggle is a plugin. You can download it from the jQuery website or link it directly from the Google CDN.</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</code></pre></div>
+
+
+<p>Secondly, you need to include the jQuery Wiggle javascript file into your page. You can do it by adding the code below to your page.</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;js/jquery-wiggle.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</code></pre></div>
+
+
+<p>Next, you create the image tag that you want to apply wiggle on.</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span></span><span class="p">&lt;</span><span class="nt">img</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;wiggle&quot;</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;images/image1.jpg&quot;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;</span><span class="nt">img</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;wiggle&quot;</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;images/image2.jpg&quot;</span> <span class="p">/&gt;</span>
+</code></pre></div>
+
+
+<p>As the last step, you trigger the <em>catWiggle()</em> function on the element you just created. In this case, we trigger the function on the image with the class <em>wiggle</em>.</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span></span><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.wiggle&#39;</span><span class="p">).</span><span class="nx">catWiggle</span><span class="p">();</span>
+<span class="p">});</span>
+</code></pre></div>
+
+
+<h2 id="settings">Settings</h2>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>degrees</td>
+<td></td>
+<td>Array object which outlines the cycle of rotation for a wiggle increment.</td>
+</tr>
+
+<tr>
+<td>delay</td>
+<td>35</td>
+<td>Allows you to specify, in milliseconds, the delay between switching from one rotation degree to the next (see degrees); a higher number creates a slower &ldquo;wiggle&rdquo;.</td>
+</tr>
+
+<tr>
+<td>limit</td>
+<td>null</td>
+<td>Specify the maximum number of wiggles, <em>null</em> which means infinite wiggles.</td>
+</tr>
+
+<tr>
+<td>random_start</td>
+<td>true</td>
+<td>Boolean value which tells the plugin to start wiggling all matched elements at the same degree or a random one.</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="callbacks">Callbacks</h2>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>on_wiggle</td>
+<td>Event that is fired off with the end of each wiggle.</td>
+</tr>
+
+<tr>
+<td>on_wiggle_start</td>
+<td>Event that is fired off when the wiggling effect first starts.</td>
+</tr>
+
+<tr>
+<td>on_wiggle_stop</td>
+<td>Event that is fired off when the wiggling effect is stopped.</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="methods">Methods</h2>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>start()</td>
+<td>Starts the wiggle effect.</td>
+</tr>
+
+<tr>
+<td>stop()</td>
+<td>Stops the wiggle effect.</td>
+</tr>
+
+<tr>
+<td>is_wiggling()</td>
+<td>Can be used to determine if the matched element is currently &ldquo;wiggling&rdquo;.</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="demo">Demo</h2>
+
+<div id="wigglewrapper">
+    <img src="img/wiggle/Calculator.png" alt="Calculator"/>
+    <img src="img/wiggle/Calendar.png" alt="Calendar"/>
+    <img src="img/wiggle/Camera.png" alt="Camera"/>
+    <img src="img/wiggle/Clock.png" alt="Clock"/>
+    <img src="img/wiggle/Contacts.png" alt="Contacts"/>
+    <img src="img/wiggle/iPod.png" alt="iPod"/>
+    <img src="img/wiggle/iTunes.png" alt="iTunes"/>
+    <img src="img/wiggle/Mail.png" alt="Mail"/>
+    <img src="img/wiggle/Maps.png" alt="Maps"/>
+    <img src="img/wiggle/Music.png" alt="Music"/>
+    <img src="img/wiggle/Notes.png" alt="Notes"/>
+    <img src="img/wiggle/Phone.png" alt="Phone"/>
+    <img src="img/wiggle/Safari.png" alt="Safari"/>
+    <img src="img/wiggle/Settings.png" alt="Settings"/>
+    <img src="img/wiggle/SMS.png" alt="SMS"/>
+    <img src="img/wiggle/YouTube.png" alt="YouTube"/>
+    <div id="wrapperbuttons" style="clear:both">
+        <button id="buttonStart">Start All</button>&nbsp;
+        <button id="buttonRandom">Random</button>&nbsp;
+        <button id="buttonStop">Stop All</button>
+    </div>
+</div>
+
+<style>#wigglewrapper{width:350px;margin:auto;padding:10px}#wigglewrapper img{float:left;cursor:pointer;margin:3px}#wrapperbuttons{border-top:1px solid #ddd;padding:15px}#wrapperbuttons button{font-weight:700;line-height:1;font-size:.8em;color:#444;border:none;text-shadow:0 1px 1px rgba(255,255,255,0.85);background-image:0;background-color:#fff;-webkit-border-radius:23px;-moz-border-radius:23px;-o-border-radus:23px;border-radisu:23px;-webkit-box-shadow:0 1px 2px rgba(0,0,0,0.5);-moz-box-shadow:0 1px 2px rgba(0,0,0,0.5);box-shadow:0 1px 2px rgba(0,0,0,0.5);padding:8px 10px}#wrapperbuttons button:hover{cursor:pointer}</style>
+
+<script src="js/jquery.js"></script>
+<script src="js/jquery-wiggle.js"></script>
+<script>
+$(document).ready(function() {
+    var interval = null;
+    $('#logowiggle').click(function() {
+        if ($(this).catWiggle('is_wiggling')) {
+            $(this).catWiggle('stop');
+        }
+        else {
+            $(this).catWiggle('start');
+        }
+    });
+    $('div#wigglewrapper img').click(function() {
+        if ($(this).catWiggle('is_wiggling')) {
+            $(this).catWiggle('stop');
+        }
+        else {
+            $(this).catWiggle('start');
+        }
+    });
+    $('button#buttonStart').click(function() {
+        $('div#wigglewrapper img').catWiggle('start');
+    });
+    $('button#buttonStop').click(function() {
+        $('div#wigglewrapper img').catWiggle('stop');
+        clearInterval(interval);
+    });
+    $('button#buttonRandom').click(function() {
+        var size = $('div#wigglewrapper img').length;
+        interval = setInterval(function() {
+            $($('div#wigglewrapper img').get(Math.floor(Math.random() * size))).catWiggle('start', {limit: 5});
+        }, 1000);
+    });
+});
+</script>
+			</section>
+		</div>
+	</div>
+	<br />
+			<div class="container content">
+			<footer>
+				<div>
+					<p class="right credit">&copy;  <a href="http://sizeof.cat/">sizeof.cat</a> - powered by <a href="https://gohugo.io/">Hugo</a> and hosted via <a href="http://pages.github.com/">GitHub Pages</a>.</p>
+				</div>
+			</footer>
+		</div>
+	</body>
+</html>
+

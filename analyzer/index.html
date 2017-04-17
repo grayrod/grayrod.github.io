@@ -14,7 +14,11 @@
     <div id="top">
 
         <div id="topleft">
-          <!-- <a href="#menu" id="menubtn" class="topbtn">&#9776;</a> -->
+          <div id="menubtn" class="topbtn">&#9776;
+          <div class="dropdown-content dropdown-content-menu" id style="display:none">
+            <a href="http://grayrod.com/chaos">Controlled Chaos</a>
+          </div>
+          </div>
         </div>
 
         <div id="topmiddle">
@@ -170,6 +174,9 @@
            } else {
              $(this).html("?");
            }
+        });
+        $('#menubtn').click(function(){
+          $(this).children("div").toggle(100);
         });
     });
     </script>

@@ -4,7 +4,7 @@ function PixelGraph(divID,data,time,scale,bgColor,pxColor,pxGradientColor) {
 	this.px = {
 		future: data,
 		time: time,
-		now: [data[time]],
+		now: [],
 		history: [],
 		color1: pxColor ? pxColor : "rbg(0,0,0)",
 		color2: pxGradientColor ? pxGradientColor : "rbg(255,255,255)",
@@ -23,8 +23,10 @@ PixelGraph.prototype.prepare = function() {
 }
 
 PixelGraph.prototype.cumulate = function() {
-	this.px.history = this.px.future.slice(0,this.px.time);
-	this.px.now = [this.px.history[this.px.history.length - 1]];
+	this.px.history.push(this.px.future.slice(0,this.px.time));
+	var currentFuture = this.px.history.length - 1;
+	var currentMoment = this.px.history[currentFuture].length - 1;
+	this.px.now = this.px.history[currentFuture][currentMoment];
 }
 
 PixelGraph.prototype.setScale = function() {
@@ -53,15 +55,7 @@ PixelGraph.prototype.create = function( event ) {
 	ctx.fillStyle = this.bgColor;
 	ctx.fillRect(0, 0, this.divW, this.divH);
 
-	this.render();
-}
-
-PixelGraph.prototype.width = function() {
-	return this.targetDiv.width();
-}
-
-PixelGraph.prototype.height = function() {
-	return this.targetDiv.height();
+	// this.render();
 }
 
 PixelGraph.prototype.render = function(clear) {
@@ -76,17 +70,60 @@ PixelGraph.prototype.render = function(clear) {
 	var x;
 	var y;
 	var o;
-	for (var i=0; i < this.px.history.length; i++) {
-		o = this.px.history[i];
-		x = (o.x - this.xMin) / xDiff;
-		y = (o.y - this.yMin) / yDiff;
+	var currentFuture = this.px.history.length - 1
+	for (var i=0; i < this.px.history[currentFuture].length; i++) {
+		o = this.px.history[currentFuture][i];
+		x = (o.x - this.xMin*this.scale) / (xDiff*this.scale);
+		y = (o.y - this.yMin*this.scale) / (yDiff*this.scale);
 		x = parseInt(x * this.divW);
 		y = parseInt(y * this.divH);
 		if (x > 0 && x < this.divW && y > 0 && y < this.divH) {
-			this.scalePixel(i, x, y, imageData);
+			if (this.divW > 800) {
+				this.scalePixel7(i, x, y, imageData);
+			} else if (this.divW > 400) {
+				this.scalePixel5(i, x, y, imageData);
+			} else if (this.divW > 200) {
+				this.scalePixel3(i, x, y, imageData);
+			} else {
+				this.scalePixel1(i, x, y, imageData);
+			}
 		}
 	}
 	ctx.putImageData(imageData, 0, 0);
+}
+
+PixelGraph.prototype.redrawHistory = function(clear) {
+	var ctx = this.canvas[0].getContext("2d");
+	if (clear) {
+		ctx.fillStyle = this.bgColor;
+		ctx.fillRect(0, 0, this.divW, this.divH);
+	}
+ 	var imageData = ctx.getImageData(0, 0, this.divW, this.divH);
+	var xDiff = this.xMax - this.xMin;
+	var yDiff = this.yMax - this.yMin
+	var x;
+	var y;
+	var o;
+	for (var i = this.px.history.length - 1; i > this.px.history.length - 50 && i >= 0; i--) {
+		for (var j=0; j < this.px.history[i].length; j++) {
+			o = this.px.history[i][j];
+			x = (o.x - this.xMin*this.scale) / (xDiff*this.scale);
+			y = (o.y - this.yMin*this.scale) / (yDiff*this.scale);
+			x = parseInt(x * this.divW);
+			y = parseInt(y * this.divH);
+			if (x > 0 && x < this.divW && y > 0 && y < this.divH) {
+				if (this.divW > 400) {
+					this.scalePixel5(i, x, y, imageData);
+				} else if (this.divW > 200) {
+					this.scalePixel3(i, x, y, imageData);
+				} else {
+					this.scalePixel1(i, x, y, imageData);
+				}
+			}
+		}
+	}
+	ctx.putImageData(imageData, 0, 0);
+	// console.log(this.px.history.length);
 }
 
 PixelGraph.prototype.update = function(clear) {
@@ -101,15 +138,21 @@ PixelGraph.prototype.update = function(clear) {
 	var x;
 	var y;
 	var o;
-	var newLen = this.px.history.length
-	o = this.px.history[newLen - 1];
-	x = (o.x - this.xMin) / xDiff;
-	y = (o.y - this.yMin) / yDiff;
+	var newLen = this.px.history[this.px.history.length - 1].length;
+	o = this.px.now;
+	x = (o.x - this.xMin*this.scale) / (xDiff*this.scale);
+	y = (o.y - this.yMin*this.scale) / (yDiff*this.scale);
 	x = parseInt(x * this.divW);
 	y = parseInt(y * this.divH);
 	if (x > 0 && x < this.divW && y > 0 && y < this.divH) {
     var i = newLen;
-		this.scalePixel(i, x, y, imageData);
+		if (this.divW > 800) {
+			this.scalePixel7(i, x, y, imageData);
+		} else if (this.divW > 400) {
+			this.scalePixel5(i, x, y, imageData);
+		} else {
+			this.scalePixel3(i, x, y, imageData);
+		}
 	}
 	ctx.putImageData(imageData, 0, 0);
 }
@@ -161,7 +204,7 @@ PixelGraph.prototype.shape = function(c, d, x, y, imageData, r, g, b, a) {
 	}
 }
 
-PixelGraph.prototype.scalePixel = function (i, x, y, imageData) {
+PixelGraph.prototype.scalePixel7 = function (i, x, y, imageData) {
 	var a = 250;
 	if (i < 25 && i > -1) {
 		this.shape(7, 6, x, y, imageData,
@@ -198,6 +241,127 @@ PixelGraph.prototype.scalePixel = function (i, x, y, imageData) {
 			this.gradient[0][6], this.gradient[1][6], this.gradient[2][6], a );
 	} else if (i < 10000 && i > 7999) {
 		this.shape(3, 3, x, y, imageData,
+			this.gradient[0][5], this.gradient[1][5], this.gradient[2][5], a );
+	}
+}
+
+PixelGraph.prototype.scalePixel5 = function (i, x, y, imageData) {
+	var a = 250;
+	if (i < 25 && i > -1) {
+		this.shape(5, 4, x, y, imageData,
+			this.gradient[0][0], this.gradient[1][0],this.gradient[2][0], a );
+	} else if (i < 50 && i > 24) {
+		this.shape(5, 4, x, y, imageData,
+			this.gradient[0][1], this.gradient[1][1], this.gradient[2][1], a );
+	} else if (i < 100 && i > 49) {
+		this.shape(5, 3, x, y, imageData,
+			this.gradient[0][2], this.gradient[1][2], this.gradient[2][2], a );
+	} else if (i < 150 && i > 99) {
+		this.shape(5, 3, x, y, imageData,
+			this.gradient[0][3], this.gradient[1][3], this.gradient[2][3], a );
+	} else if (i < 200 && i > 149) {
+		this.shape(3, 3, x, y, imageData,
+			this.gradient[0][4], this.gradient[1][4], this.gradient[2][4], a );
+	} else if (i < 250 && i > 199) {
+		this.shape(3, 3, x, y, imageData,
+			this.gradient[0][5], this.gradient[1][5], this.gradient[2][5], a );
+	} else if (i < 500 && i > 249) {
+		this.shape(3, 1, x, y, imageData,
+			this.gradient[0][6], this.gradient[1][6], this.gradient[2][6], a );
+	} else if (i < 2000 && i > 499) {
+		this.shape(3, 1, x, y, imageData,
+			this.gradient[0][7], this.gradient[1][7], this.gradient[2][7], a );
+	} else if (i < 4000 && i > 1999) {
+		this.shape(1, 1, x, y, imageData,
+			this.gradient[0][8], this.gradient[1][8], this.gradient[2][8], a );
+	} else if (i < 6000 && i > 3999) {
+		this.shape(1, 1, x, y, imageData,
+			this.gradient[0][7], this.gradient[1][7], this.gradient[2][7], a );
+	} else if (i < 8000 && i > 5999) {
+		this.shape(3, 1, x, y, imageData,
+			this.gradient[0][6], this.gradient[1][6], this.gradient[2][6], a );
+	} else if (i < 10000 && i > 7999) {
+		this.shape(3, 3, x, y, imageData,
+			this.gradient[0][5], this.gradient[1][5], this.gradient[2][5], a );
+	}
+}
+PixelGraph.prototype.scalePixel3 = function (i, x, y, imageData) {
+	var a = 250;
+	if (i < 25 && i > -1) {
+		this.shape(3, 3, x, y, imageData,
+			this.gradient[0][0], this.gradient[1][0],this.gradient[2][0], a );
+	} else if (i < 50 && i > 24) {
+		this.shape(3, 3, x, y, imageData,
+			this.gradient[0][1], this.gradient[1][1], this.gradient[2][1], a );
+	} else if (i < 100 && i > 49) {
+		this.shape(3, 3, x, y, imageData,
+			this.gradient[0][2], this.gradient[1][2], this.gradient[2][2], a );
+	} else if (i < 150 && i > 99) {
+		this.shape(3, 3, x, y, imageData,
+			this.gradient[0][3], this.gradient[1][3], this.gradient[2][3], a );
+	} else if (i < 200 && i > 149) {
+		this.shape(3, 1, x, y, imageData,
+			this.gradient[0][4], this.gradient[1][4], this.gradient[2][4], a );
+	} else if (i < 250 && i > 199) {
+		this.shape(3, 1, x, y, imageData,
+			this.gradient[0][5], this.gradient[1][5], this.gradient[2][5], a );
+	} else if (i < 500 && i > 249) {
+		this.shape(3, 1, x, y, imageData,
+			this.gradient[0][6], this.gradient[1][6], this.gradient[2][6], a );
+	} else if (i < 2000 && i > 499) {
+		this.shape(3, 1, x, y, imageData,
+			this.gradient[0][7], this.gradient[1][7], this.gradient[2][7], a );
+	} else if (i < 4000 && i > 1999) {
+		this.shape(1, 1, x, y, imageData,
+			this.gradient[0][8], this.gradient[1][8], this.gradient[2][8], a );
+	} else if (i < 6000 && i > 3999) {
+		this.shape(1, 1, x, y, imageData,
+			this.gradient[0][7], this.gradient[1][7], this.gradient[2][7], a );
+	} else if (i < 8000 && i > 5999) {
+		this.shape(3, 1, x, y, imageData,
+			this.gradient[0][6], this.gradient[1][6], this.gradient[2][6], a );
+	} else if (i < 10000 && i > 7999) {
+		this.shape(3, 3, x, y, imageData,
+			this.gradient[0][5], this.gradient[1][5], this.gradient[2][5], a );
+	}
+}
+PixelGraph.prototype.scalePixel1 = function (i, x, y, imageData) {
+	var a = 250;
+	if (i < 25 && i > -1) {
+		this.shape(1, 1, x, y, imageData,
+			this.gradient[0][0], this.gradient[1][0],this.gradient[2][0], a );
+	} else if (i < 50 && i > 24) {
+		this.shape(1, 1, x, y, imageData,
+			this.gradient[0][1], this.gradient[1][1], this.gradient[2][1], a );
+	} else if (i < 100 && i > 49) {
+		this.shape(1, 1, x, y, imageData,
+			this.gradient[0][2], this.gradient[1][2], this.gradient[2][2], a );
+	} else if (i < 150 && i > 99) {
+		this.shape(1, 1, x, y, imageData,
+			this.gradient[0][3], this.gradient[1][3], this.gradient[2][3], a );
+	} else if (i < 200 && i > 149) {
+		this.shape(1, 1, x, y, imageData,
+			this.gradient[0][4], this.gradient[1][4], this.gradient[2][4], a );
+	} else if (i < 250 && i > 199) {
+		this.shape(1, 1, x, y, imageData,
+			this.gradient[0][5], this.gradient[1][5], this.gradient[2][5], a );
+	} else if (i < 500 && i > 249) {
+		this.shape(1, 1, x, y, imageData,
+			this.gradient[0][6], this.gradient[1][6], this.gradient[2][6], a );
+	} else if (i < 2000 && i > 499) {
+		this.shape(1, 1, x, y, imageData,
+			this.gradient[0][7], this.gradient[1][7], this.gradient[2][7], a );
+	} else if (i < 4000 && i > 1999) {
+		this.shape(1, 1, x, y, imageData,
+			this.gradient[0][8], this.gradient[1][8], this.gradient[2][8], a );
+	} else if (i < 6000 && i > 3999) {
+		this.shape(1, 1, x, y, imageData,
+			this.gradient[0][7], this.gradient[1][7], this.gradient[2][7], a );
+	} else if (i < 8000 && i > 5999) {
+		this.shape(1, 1, x, y, imageData,
+			this.gradient[0][6], this.gradient[1][6], this.gradient[2][6], a );
+	} else if (i < 10000 && i > 7999) {
+		this.shape(1, 1, x, y, imageData,
 			this.gradient[0][5], this.gradient[1][5], this.gradient[2][5], a );
 	}
 }
